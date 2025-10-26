@@ -1,0 +1,12 @@
+{
+  "extends": [
+    "@tsconfig/svelte/tsconfig.json",
+    "./.svelte-kit/tsconfig.json"
+  ],
+  "include": [
+    "src"
+  ],
+  "compilerOptions": {
+    "type": ["@sveltejs/kit"]
+  }
+}
