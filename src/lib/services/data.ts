@@ -1,6 +1,6 @@
-import { type Battle } from '$lib/types/components/data/battle'
-import type { BattleEntity } from '$lib/types/components/data/battle_entity'
-import type { Entity } from '$lib/types/components/data/entity'
+import { type Battle } from '$lib/types/data/battle'
+import type { BattleEntity } from '$lib/types/data/battle_entity'
+import type { Entity } from '$lib/types/data/entity'
 import { create, get, list, update } from './database'
 
 /** Battles */

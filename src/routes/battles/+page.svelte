@@ -1,39 +1,44 @@
 <script lang="ts">
-  import ButtonLink from '$components/base/ButtonLink.svelte'
+  import Button from '$lib/components/ui/button/button.svelte'
 
   let { data } = $props()
 </script>
 
 <div class="flex flex-col w-full">
   <div class="flex w-full">
-    <h1 class="text-3xl mb-4">Battles</h1>
+    <h1 class="grow text-3xl mb-4">Battles</h1>
     <span>
-      <ButtonLink
-        {...{ text: 'Add', href: 'battles/add', title: 'Add New Battle' }}
+      <Button href="battles/add" title="Add New Battle" variant="secondary"
+        >Add</Button
       >
-        Add
-      </ButtonLink>
     </span>
   </div>
   <div class="flex flex-col">
     <div class="flex flex-col w-full">
       {#each data.battles as battle}
         <div
-          class="p-2 m-2 w-full flex flex-row bg-gray-300 dark:bg-gray-800 dark:text-gray-400"
+          class="p-2 my-2 w-full flex flex-row bg-gray-300 dark:bg-gray-800 dark:text-gray-400"
         >
-          <a
-            href="/battles/{battle.id}"
-            class="no-underline text-xl flex-10 hover:text-gray-500"
-            >{battle.name}</a
-          >
-          <span class="flex-2 flex flex-row">
-            <ButtonLink
-              {...{
-                href: `battles/${battle.id}`,
-                title: 'Delete Battle',
-                style: 'danger',
-              }}>Delete</ButtonLink
+          <span class="flex-1">
+            {battle.name}
+          </span>
+          <span class="flex-2 flex flex-row justify-end px-2">
+            <Button
+              href="battles/{battle.id}"
+              class="mx-2"
+              variant="outline"
+              title="View Battle"
             >
+              Go To
+            </Button>
+            <Button
+              href="battles/{battle.id}"
+              class="mx-2"
+              title="Delete Battle"
+              variant="destructive_outline"
+            >
+              Delete
+            </Button>
           </span>
         </div>
       {:else}

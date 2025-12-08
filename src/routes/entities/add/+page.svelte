@@ -1,33 +1,31 @@
 <script lang="ts">
-  import { createBattle } from '$lib/services/data'
   import { goto } from '$app/navigation'
-  import FormField from '$lib/components/ui/form/form-field.svelte'
   import { FormControl } from '$lib/components/ui/form'
+  import FormButton from '$lib/components/ui/form/form-button.svelte'
+  import FormFieldErrors from '$lib/components/ui/form/form-field-errors.svelte'
+  import FormField from '$lib/components/ui/form/form-field.svelte'
   import FormLabel from '$lib/components/ui/form/form-label.svelte'
   import Input from '$lib/components/ui/input/input.svelte'
+  import Textarea from '$lib/components/ui/textarea/textarea.svelte'
+  import { entityAddSchema } from '$lib/schemas/entity'
+  import { createEntity } from '$lib/services/data'
+  import type { FormError } from '$lib/types/components/forms/FormError'
   import { defaults, superForm } from 'sveltekit-superforms'
   import { zod4, zod4Client } from 'sveltekit-superforms/adapters'
-  import { battleAddSchema, type BattleAddSchema } from '$lib/schemas/battle'
-  import FormFieldErrors from '$lib/components/ui/form/form-field-errors.svelte'
-  import FormButton from '$lib/components/ui/form/form-button.svelte'
-  import Textarea from '$lib/components/ui/textarea/textarea.svelte'
 
-  const form = superForm(defaults(zod4(battleAddSchema)), {
+  const form = superForm(defaults(zod4(entityAddSchema)), {
     SPA: true,
-    validators: zod4Client(battleAddSchema),
+    validators: zod4Client(entityAddSchema),
     onUpdate({ form }) {
       if (form.valid) {
-        createBattle({
-          name: form.data.name,
+        createEntity({
+          name: form.data.name ?? '',
           description: form.data.description ?? '',
-          started: false,
         }).then(
-          (battle) => {
-            goto(`/battles/${battle.id}`)
-          },
-          (reason) =>
-            // TODO update errors
-            console.log('oh no'),
+          (entity) => goto(`/entities/${entity}`),
+          (response) =>
+            // TODO add to errors
+            console.log('uh oh'),
         )
       }
     },
@@ -52,6 +50,6 @@
       </FormControl>
       <FormFieldErrors />
     </FormField>
-    <FormButton>Add Battle</FormButton>
+    <FormButton>Create Entity</FormButton>
   </form>
 </div>
