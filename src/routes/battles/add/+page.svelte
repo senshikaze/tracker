@@ -7,7 +7,7 @@
   import Input from '$lib/components/ui/input/input.svelte'
   import { defaults, superForm } from 'sveltekit-superforms'
   import { zod4, zod4Client } from 'sveltekit-superforms/adapters'
-  import { battleAddSchema, type BattleAddSchema } from '$lib/schemas/battle'
+  import { battleAddSchema } from '$lib/schemas/battle'
   import FormFieldErrors from '$lib/components/ui/form/form-field-errors.svelte'
   import FormButton from '$lib/components/ui/form/form-button.svelte'
   import Textarea from '$lib/components/ui/textarea/textarea.svelte'

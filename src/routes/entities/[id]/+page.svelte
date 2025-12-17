@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Entity } from '$lib/types/data/entity'
+  import type { Entity } from '$lib/schemas/entity'
 
   interface EntityProp {
     entity: Entity

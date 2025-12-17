@@ -1,13 +1,7 @@
 import { getBattle, getBattleEntities } from '$lib/services/data'
+import type { PageLoad } from './$types'
 
-// fuck you vs code
-interface BattleProps {
-  params: {
-    id: string
-  }
-}
-
-export async function load({ params }: BattleProps) {
+export const load: PageLoad = async ({ params }) => {
   const [battle, entities] = await Promise.all([
     getBattle(Number.parseInt(params.id)),
     getBattleEntities(Number.parseInt(params.id)),

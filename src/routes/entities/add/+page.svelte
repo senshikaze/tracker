@@ -9,7 +9,6 @@
   import Textarea from '$lib/components/ui/textarea/textarea.svelte'
   import { entityAddSchema } from '$lib/schemas/entity'
   import { createEntity } from '$lib/services/data'
-  import type { FormError } from '$lib/types/components/forms/FormError'
   import { defaults, superForm } from 'sveltekit-superforms'
   import { zod4, zod4Client } from 'sveltekit-superforms/adapters'
 

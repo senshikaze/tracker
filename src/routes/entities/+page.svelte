@@ -1,11 +1,27 @@
 <script lang="ts">
+  import { refreshAll } from '$app/navigation'
   import Button from '$lib/components/ui/button/button.svelte'
-  import type { Entity } from '$lib/types/data/entity'
+  import Empty from '$lib/components/ui/empty/empty.svelte'
+  import ItemActions from '$lib/components/ui/item/item-actions.svelte'
+  import ItemContent from '$lib/components/ui/item/item-content.svelte'
+  import ItemDescription from '$lib/components/ui/item/item-description.svelte'
+  import ItemGroup from '$lib/components/ui/item/item-group.svelte'
+  import ItemTitle from '$lib/components/ui/item/item-title.svelte'
+  import Item from '$lib/components/ui/item/item.svelte'
+  import type { Entity } from '$lib/schemas/entity'
+  import { deleteEntity } from '$lib/services/data'
 
   interface EntitiesProps {
     entities: Entity[]
   }
   let { data }: { data: EntitiesProps } = $props()
+
+  const deleteClicked = (id?: number) => {
+    if (id) {
+      deleteEntity(id)
+      refreshAll()
+    }
+  }
 </script>
 
 <div class="flex flex-col w-full">
@@ -15,15 +31,36 @@
       <Button href="entities/add" title="Add Entity">Add</Button>
     </span>
   </div>
-  <div class="flex flx-col">
+  <ItemGroup>
     {#each data.entities as entity}
-      <div
-        class="p-2 m-2 w-full flex flex-row bg-gray-300 dark:bg-gray-800 dark:text-gray-400"
-      >
-        {entity.name}
-      </div>
+      <Item variant="outline">
+        <ItemContent>
+          <ItemTitle>{entity.name}</ItemTitle>
+          <ItemDescription>{entity.description}</ItemDescription>
+        </ItemContent>
+        <ItemContent>
+          <ItemActions>
+            <Button
+              href="entities/{entity.id}"
+              class="mx-2"
+              variant="outline"
+              title="View Entity"
+            >
+              View
+            </Button>
+            <Button
+              onclick={() => deleteClicked(entity.id)}
+              class="mx-2 cursor-pointer"
+              title="Delete Entity"
+              variant="destructive_outline"
+            >
+              Delete
+            </Button>
+          </ItemActions>
+        </ItemContent>
+      </Item>
     {:else}
-      <p>No Entities Found</p>
+      <Empty>No Entities Found</Empty>
     {/each}
-  </div>
+  </ItemGroup>
 </div>
