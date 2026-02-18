@@ -11,25 +11,25 @@
   import { Button } from '$lib/components/ui/button'
   import { Dialog, DialogContent } from '$lib/components/ui/dialog'
   import { Empty, EmptyHeader, EmptyTitle } from '$lib/components/ui/empty'
-  import { ItemContent, ItemGroup, Item } from '$lib/components/ui/item'
   import type { BattleEntity, Entity } from '$lib/schemas/entity'
   import { getEntity } from '$lib/services/data'
   import PlusIcon from '@lucide/svelte/icons/plus'
   import type { PageProps } from './$types'
+  import BattleEntityItems from './BattleEntityItems.svelte'
+  import BattleEntityDetails from './BattleEntityDetails.svelte'
+  import BattleInitiative from './BattleInitiative.svelte'
 
   let { data }: PageProps = $props()
 
-  const { battle, entities } = $derived(data)
+  let { battle, entities } = $derived(data)
 
   let selectedEntity: Entity | undefined = $state()
   let showAdd: boolean = $state(false)
-
-  const entitySelected = async (entity: BattleEntity) =>
-    await getEntity(entity.entity_id).then((e) => (selectedEntity = e))
+  let started: boolean = $state(false)
 </script>
 
-<div class="w-full h-full flex">
-  <div class="flex flex-2 flex-col">
+<div class="w-full min-h-full flex">
+  <div class="flex flex-2 flex-col min-w-[25%]">
     <div class="flex p-2">
       <Breadcrumb>
         <BreadcrumbList>
@@ -42,43 +42,33 @@
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <Button
-        variant="outline"
-        size="sm"
-        class="ml-auto"
-        onclick={() => (showAdd = true)}
-      >
+    </div>
+    <BattleEntityItems
+      bind:entities
+      selected={(entity) => (selectedEntity = entity.entity)}
+      className="grow"
+      started
+    />
+    <div class="flex shrink justify-between pt-2 mx-2">
+      <BattleInitiative
+        {battle}
+        setInit={(newInit) => (battle.initiative = newInit)}
+        setStarted={(start) => (started = start)}
+      />
+      <Button variant="outline" size="sm" onclick={() => (showAdd = true)}>
         <PlusIcon />
         Add
       </Button>
-    </div>
-    <div class="grow min-h-64 overflow-y-scroll">
-      <ItemGroup>
-        {#each entities as entity}
-          <Item>
-            <ItemContent>{entity.entity?.name}</ItemContent>
-          </Item>
-        {:else}
-          <Empty>
-            <EmptyHeader>
-              <EmptyTitle
-                class="m-auto text-xl text-gray-700 dark:text-gray-600"
-                >No Entities in Battle</EmptyTitle
-              >
-            </EmptyHeader>
-          </Empty>
-        {/each}
-      </ItemGroup>
     </div>
   </div>
   <div class="flex-10 flex flex-col border-l p-2S">
     <div class="grow flex flex-col overflow-y-scroll">
       {#if selectedEntity}
-        <p>{selectedEntity.id}</p>
+        <BattleEntityDetails entity={selectedEntity} />
       {:else}
         <Empty>
           <EmptyHeader>
-            <EmptyTitle class="text-2xl text-gray-700 dark:text-gray-600">
+            <EmptyTitle class="text-2xl text-primary/50">
               -- Select an Entity --
             </EmptyTitle>
           </EmptyHeader>
@@ -86,7 +76,6 @@
       {/if}
     </div>
   </div>
-
   <Dialog bind:open={showAdd}>
     <DialogContent>
       <Add
