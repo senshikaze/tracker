@@ -1,6 +1,8 @@
 <script lang="ts">
+  import { page } from '$app/state'
+  import ModalButton from '$lib/components/features/ModalButton.svelte'
   import { Button } from '$lib/components/ui/button'
-  import { Empty } from '$lib/components/ui/empty'
+  import { Empty, EmptyContent, EmptyHeader } from '$lib/components/ui/empty'
   import {
     ItemActions,
     ItemContent,
@@ -10,6 +12,8 @@
     Item,
   } from '$lib/components/ui/item/'
   import { deleteBattle } from '$lib/services/data.js'
+  import AddPage from './add/+page.svelte'
+  import { toast } from 'svelte-sonner'
 
   let { data } = $props()
   const { battles } = $derived(data)
@@ -19,9 +23,13 @@
   <div class="flex w-full">
     <h1 class="grow text-3xl mb-4">Battles</h1>
     <span>
-      <Button href="battles/add" title="Add New Battle" variant="secondary">
+      <ModalButton
+        href="battles/add"
+        title="Add New Battle"
+        variant="secondary"
+      >
         Add
-      </Button>
+      </ModalButton>
     </span>
   </div>
   <ItemGroup class="space-y-2">
@@ -45,7 +53,12 @@
               class="mx-2"
               title="Delete Battle"
               variant="destructive_outline"
-              onclick={() => (battle.id ? deleteBattle(battle.id) : undefined)}
+              onclick={() => {
+                if (battle.id) {
+                  deleteBattle(battle.id)
+                  toast('Battle Deleted')
+                }
+              }}
             >
               Delete
             </Button>
@@ -53,7 +66,20 @@
         </ItemContent>
       </Item>
     {:else}
-      <Empty>No Battles Found</Empty>
+      <Empty>
+        <EmptyHeader>No Battles Found</EmptyHeader>
+        <EmptyContent>
+          <ModalButton
+            href='battles/add'
+          >
+            Add New Battle
+          </ModalButton>
+        </EmptyContent>
+      </Empty>
     {/each}
   </ItemGroup>
 </div>
+
+{#if page.state.selected}
+  <AddPage data={page.state.selected} />
+{/if}

@@ -8,9 +8,9 @@ export const battleSchema = dbRecord.extend({
   initiative: z.number().optional(),
 })
 
-export const battleAddSchema = battleSchema.pick({
-  name: true,
-  description: true,
+export const battleAddSchema = dbRecord.extend({
+  name: z.string().min(3),
+  description: z.string().optional(),
 })
 
 export type Battle = z.infer<typeof battleSchema>

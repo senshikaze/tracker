@@ -18,6 +18,9 @@
   import BattleEntityItems from './BattleEntityItems.svelte'
   import BattleEntityDetails from './BattleEntityDetails.svelte'
   import BattleInitiative from './BattleInitiative.svelte'
+  import BattleEntitiesAddPage from './battle_entities/add/+page.svelte'
+  import { page } from '$app/state'
+  import ModalButton from '$lib/components/features/ModalButton.svelte'
 
   let { data }: PageProps = $props()
 
@@ -55,10 +58,14 @@
         setInit={(newInit) => (battle.initiative = newInit)}
         setStarted={(start) => (started = start)}
       />
-      <Button variant="outline" size="sm" onclick={() => (showAdd = true)}>
+      <ModalButton
+        href={`./${battle.id}/battle_entities/add`}
+        variant="outline"
+        size="sm"
+      >
         <PlusIcon />
         Add
-      </Button>
+      </ModalButton>
     </div>
   </div>
   <div class="flex-10 flex flex-col border-l p-2S">
@@ -76,13 +83,8 @@
       {/if}
     </div>
   </div>
-  <Dialog bind:open={showAdd}>
-    <DialogContent>
-      <Add
-        battle_id={battle?.id ?? 0}
-        battleEntityCreated={(be) => entities.push(be)}
-        cancel={() => (showAdd = false)}
-      />
-    </DialogContent>
-  </Dialog>
 </div>
+
+{#if page.state.selected}
+  <BattleEntitiesAddPage data={page.state.selected} />
+{/if}

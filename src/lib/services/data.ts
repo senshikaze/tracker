@@ -4,7 +4,6 @@ import type {
   BattleEntityExtended,
   Entity,
 } from '$lib/schemas/entity'
-import { liveQuery, type Observable } from 'dexie'
 import { db } from './database'
 
 /** Battles */
