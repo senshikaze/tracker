@@ -1,10 +1,9 @@
 <script lang="ts">
+  import { ChevronDownIcon, ChevronUpIcon } from '$lib/components/Icons/lucide'
   import ButtonGroup from '$lib/components/ui/button-group/button-group.svelte'
   import Button from '$lib/components/ui/button/button.svelte'
   import Input from '$lib/components/ui/input/input.svelte'
   import type { BattleEntityExtended } from '$lib/schemas/entity'
-  import ChevronDown from '@lucide/svelte/icons/chevron-down'
-  import ChevronUp from '@lucide/svelte/icons/chevron-up'
 
   let {
     entity,
@@ -20,31 +19,23 @@
     entity: BattleEntityExtended,
     operation: 'add' | 'sub',
   ) => {
-    let newHealth = entity.current_hp ?? 0
+    const current_health = entity.current_hp ?? 0
+    const total_health = entity.total_hp ?? 0
+    let newHealth = current_health ?? 0
     if (operation == 'add') {
-      if (
-        (entity.current_hp ?? 0) + healthChangeValue >
-        (entity.total_hp ?? 0)
-      ) {
-        newHealth = entity.total_hp ?? 0
-      } else {
-        newHealth = (entity.current_hp ?? 0) + healthChangeValue
+      newHealth = current_health + healthChangeValue
+      if (newHealth > total_health) {
+        newHealth = total_health
       }
     }
 
     if (operation == 'sub') {
-      if ((entity.current_hp ?? 0) - healthChangeValue < 0) {
-        if (entity.player_character) {
-          newHealth = (entity.current_hp ?? 0) - healthChangeValue
-        } else {
-          newHealth = 0
-        }
-      } else {
-        newHealth = entity.current_hp ?? 0 - healthChangeValue
+      newHealth = current_health - healthChangeValue
+      if (newHealth < 0 && !entity.player_character) {
+        newHealth = 0
       }
     }
     changeHealth(newHealth)
-    console.log(newHealth)
   }
 </script>
 
@@ -56,7 +47,7 @@
     title="Increase Health"
     onclick={() => changeCurrentHealth(entity, 'add')}
   >
-    <ChevronUp />
+    <ChevronUpIcon />
   </Button>
   <Input
     class="w-11 text-sm p-2"
@@ -81,6 +72,6 @@
     title="Decrease Health"
     onclick={() => changeCurrentHealth(entity, 'sub')}
   >
-    <ChevronDown />
+    <ChevronDownIcon />
   </Button>
 </ButtonGroup>

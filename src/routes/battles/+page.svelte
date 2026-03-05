@@ -69,17 +69,13 @@
       <Empty>
         <EmptyHeader>No Battles Found</EmptyHeader>
         <EmptyContent>
-          <ModalButton
-            href='battles/add'
-          >
-            Add New Battle
-          </ModalButton>
+          <ModalButton href="battles/add">Add New Battle</ModalButton>
         </EmptyContent>
       </Empty>
     {/each}
   </ItemGroup>
 </div>
 
-{#if page.state.selected}
-  <AddPage data={page.state.selected} />
+{#if page.state.loaderData}
+  <AddPage />
 {/if}

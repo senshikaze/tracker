@@ -23,7 +23,7 @@
     <Item>
       <ItemContent>
         <BattleEntityItem
-          bind:entity={entities[index]}
+          {entity}
           selected={(entity) => selected(entity)}
           {index}
           {started}

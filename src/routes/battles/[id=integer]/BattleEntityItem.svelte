@@ -2,8 +2,8 @@
   import GripVertical from '@lucide/svelte/icons/grip-vertical'
   import HealthChanger from './HealthChanger.svelte'
   import Button from '$lib/components/ui/button/button.svelte'
-  import type { BattleEntityExtended } from '$lib/schemas/entity'
-  import { updateEntity } from '$lib/services/data'
+  import type { BattleEntity, BattleEntityExtended } from '$lib/schemas/entity'
+  import { updateBattleEntity } from '$lib/services/data'
   import Edit from '@lucide/svelte/icons/edit'
 
   let {
@@ -70,10 +70,9 @@
       <HealthChanger
         {entity}
         changeHealth={(current) => {
-          console.log(current)
-
-          updateEntity
-          console.log(entity.current_hp)
+          entity = { ...entity, current_hp: current } // tell svelte about it
+          const { entity: a, battle: b, ...battleEntity } = entity // tell dexie about it
+          updateBattleEntity({ ...battleEntity } as BattleEntity)
         }}
       />
     </div>

@@ -1,6 +1,6 @@
 declare namespace App {
-  export interface PageState {
+  export interface PageState<T> {
     showModal?: boolean
-    selected?: Record<string, any>
+    loaderData?: T
   }
 }

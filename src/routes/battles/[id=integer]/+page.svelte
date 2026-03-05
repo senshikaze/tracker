@@ -1,5 +1,4 @@
 <script lang="ts">
-  import Add from '$lib/components/features/BattleEntities/Add.svelte'
   import {
     Breadcrumb,
     BreadcrumbItem,
@@ -8,11 +7,8 @@
     BreadcrumbPage,
     BreadcrumbSeparator,
   } from '$lib/components/ui/breadcrumb'
-  import { Button } from '$lib/components/ui/button'
-  import { Dialog, DialogContent } from '$lib/components/ui/dialog'
   import { Empty, EmptyHeader, EmptyTitle } from '$lib/components/ui/empty'
-  import type { BattleEntity, Entity } from '$lib/schemas/entity'
-  import { getEntity } from '$lib/services/data'
+  import type { Entity } from '$lib/schemas/entity'
   import PlusIcon from '@lucide/svelte/icons/plus'
   import type { PageProps } from './$types'
   import BattleEntityItems from './BattleEntityItems.svelte'
@@ -22,7 +18,7 @@
   import { page } from '$app/state'
   import ModalButton from '$lib/components/features/ModalButton.svelte'
 
-  let { data }: PageProps = $props()
+  const { data }: PageProps = $props()
 
   let { battle, entities } = $derived(data)
 
@@ -47,7 +43,7 @@
       </Breadcrumb>
     </div>
     <BattleEntityItems
-      bind:entities
+      entities={entities ?? []}
       selected={(entity) => (selectedEntity = entity.entity)}
       className="grow"
       started
@@ -85,6 +81,6 @@
   </div>
 </div>
 
-{#if page.state.selected}
-  <BattleEntitiesAddPage data={page.state.selected} />
+{#if page.state.loaderData}
+  <BattleEntitiesAddPage data={page.state.loaderData} />
 {/if}

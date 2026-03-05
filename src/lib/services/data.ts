@@ -87,6 +87,20 @@ export function createBattleEntity(data: BattleEntity): Promise<BattleEntity> {
   )
 }
 
+export function updateBattleEntity(data: BattleEntity): Promise<BattleEntity> {
+  if (data.battle_id === undefined || data.entity_id === undefined) {
+    return Promise.reject('Must have both battle and entity ids')
+  }
+
+  return db['battle-entities'].update(data.id, data).then(
+    (_) => data,
+    (e) => {
+      console.error(e)
+      throw e
+    }
+  )
+}
+
 /** Entities */
 export function getEntities(): Promise<Entity[]> {
   return db.entities.toArray()
@@ -117,7 +131,7 @@ export function updateEntity(data: Entity): Promise<Entity> {
   return db.entities.update(data.id, data).then(
     (_) => data,
     (e) => {
-      console.log(e)
+      console.error(e)
       throw e
     },
   )
