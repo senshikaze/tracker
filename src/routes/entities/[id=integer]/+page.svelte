@@ -1,48 +1,40 @@
 <script lang="ts">
-  import { goto } from '$app/navigation'
-  import BreadcrumbItem from '$lib/components/ui/breadcrumb/breadcrumb-item.svelte'
-  import BreadcrumbLink from '$lib/components/ui/breadcrumb/breadcrumb-link.svelte'
-  import BreadcrumbList from '$lib/components/ui/breadcrumb/breadcrumb-list.svelte'
-  import BreadcrumbSeparator from '$lib/components/ui/breadcrumb/breadcrumb-separator.svelte'
-  import Breadcrumb from '$lib/components/ui/breadcrumb/breadcrumb.svelte'
-  import Button from '$lib/components/ui/button/button.svelte'
-  import ItemActions from '$lib/components/ui/item/item-actions.svelte'
-  import ItemContent from '$lib/components/ui/item/item-content.svelte'
-  import ItemHeader from '$lib/components/ui/item/item-header.svelte'
-  import ItemTitle from '$lib/components/ui/item/item-title.svelte'
-  import Item from '$lib/components/ui/item/item.svelte'
-  import type { Entity } from '$lib/schemas/entity'
-  import { toast } from 'svelte-sonner'
-  import Edit from '@lucide/svelte/icons/edit'
+  import { page } from '$app/state'
+  import { EditIcon } from '$lib/components/Icons/lucide'
+  import {
+    Item,
+    ItemActions,
+    ItemContent,
+    ItemHeader,
+    ItemTitle,
+  } from '$lib/components/ui/item'
+  import ModalButton from '$lib/components/features/ModalButton.svelte'
+  import { setBreadcrumbs } from '$lib/stores/breadcrumb.svelte'
+  import EntityEditPage from './edit/+page.svelte'
+  import EntityBattles from './EntityBattles.svelte'
+  import EntityScores from './EntityScores.svelte'
+  import type { PageProps } from './$types'
 
-  interface EntityProp {
-    entity: Entity
-  }
-  const { data }: { data: EntityProp } = $props()
+  const { data }: PageProps = $props()
 
-  const entity = data.entity
+  const { entity, battleEntities } = $derived(data)
 
-  if (!entity) {
-    toast.error('Entity not found!')
-    goto('/entities')
-  }
+  $effect(() => {
+    setBreadcrumbs([
+      {
+        href: '/entities',
+        label: 'Entities',
+      },
+      {
+        href: `/entities/${entity.id}`,
+        label: entity.name ?? `Entity-${entity.id}`,
+      },
+    ])
+  })
 </script>
 
 <div class="flex flex-col w-full space-y-2">
-  <Breadcrumb>
-    <BreadcrumbList>
-      <BreadcrumbItem>
-        <BreadcrumbLink href="/entities">Entities</BreadcrumbLink>
-      </BreadcrumbItem>
-      <BreadcrumbSeparator />
-      <BreadcrumbItem>
-        <BreadcrumbLink href={`/entities/${entity.id}`}>
-          {entity.name}
-        </BreadcrumbLink>
-      </BreadcrumbItem>
-    </BreadcrumbList>
-  </Breadcrumb>
-  <div class="flex flex-col">
+  <div class="flex flex-col gap-2">
     <Item variant="outline" class="w-full">
       <ItemContent>
         <ItemHeader>
@@ -50,8 +42,27 @@
         </ItemHeader>
       </ItemContent>
       <ItemActions>
-        <Button><Edit /> Edit</Button>
+        <ModalButton
+          href="/entities/{entity.id}/edit"
+          title="Edit Entity"
+          variant="outline"
+        >
+          <EditIcon /> Edit
+        </ModalButton>
       </ItemActions>
     </Item>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="md-colspan-1 flex flex-col">
+        <EntityScores {entity} />
+      </div>
+      <div class="md-colspan-2"></div>
+    </div>
+    <div class="flex flex-col">
+      <EntityBattles {battleEntities} />
+    </div>
   </div>
 </div>
+
+{#if page.state.loaderData}
+  <EntityEditPage data={page.state.loaderData} />
+{/if}

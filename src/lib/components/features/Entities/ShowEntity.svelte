@@ -12,6 +12,7 @@
   import type { Entity } from '$lib/schemas/entity'
   import ModalButton from '../ModalButton.svelte'
   import EntityEditPage from '../../../../routes/entities/[id=integer]/edit/+page.svelte'
+  import Button from '$lib/components/ui/button/button.svelte'
 
   const { entity }: { entity: Entity } = $props()
 </script>
@@ -22,7 +23,8 @@
     <ItemDescription>{entity.description}</ItemDescription>
   </ItemContent>
   <ItemActions>
-    <ModalButton href="/entities/${entity.id}/edit" variant="outline" size="sm">
+    <Button href="/entities/{entity.id}">View</Button>
+    <ModalButton href="/entities/{entity.id}/edit" variant="outline" size="sm">
       <EditIcon /> Edit
     </ModalButton>
   </ItemActions>

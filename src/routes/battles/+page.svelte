@@ -1,6 +1,5 @@
 <script lang="ts">
   import { page } from '$app/state'
-  import ModalButton from '$lib/components/features/ModalButton.svelte'
   import { Button } from '$lib/components/ui/button'
   import { Empty, EmptyContent, EmptyHeader } from '$lib/components/ui/empty'
   import {
@@ -12,11 +11,23 @@
     Item,
   } from '$lib/components/ui/item/'
   import { deleteBattle } from '$lib/services/data.js'
+  import { setBreadcrumbs } from '$lib/stores/breadcrumb.svelte'
+  import ModalButton from '$lib/components/features/ModalButton.svelte'
   import AddPage from './add/+page.svelte'
   import { toast } from 'svelte-sonner'
+  import type { PageProps } from './$types'
 
-  let { data } = $props()
+  let { data }: PageProps = $props()
   const { battles } = $derived(data)
+
+  $effect(() => {
+    setBreadcrumbs([
+      {
+        href: '/battles',
+        label: 'Battles',
+      },
+    ])
+  })
 </script>
 
 <div class="flex flex-col w-full">

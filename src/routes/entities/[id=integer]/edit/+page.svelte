@@ -1,28 +1,33 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
-  import DialogContent from '$lib/components/ui/dialog/dialog-content.svelte'
-  import Dialog from '$lib/components/ui/dialog/dialog.svelte'
-  import { FormControl } from '$lib/components/ui/form'
-  import FormField from '$lib/components/ui/form/form-field.svelte'
-  import FormFieldset from '$lib/components/ui/form/form-fieldset.svelte'
-  import FormLabel from '$lib/components/ui/form/form-label.svelte'
-  import FormLegend from '$lib/components/ui/form/form-legend.svelte'
-  import Input from '$lib/components/ui/input/input.svelte'
-  import Separator from '$lib/components/ui/separator/separator.svelte'
-  import { Textarea } from '$lib/components/ui/textarea'
   import {
-    entityAddSchema,
-    entitySchema,
-    type Entity,
-  } from '$lib/schemas/entity'
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogHeader,
+    DialogFooter,
+  } from '$lib/components/ui/dialog'
+  import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+  } from '$lib/components/ui/tabs'
+  import { FormControl, FormField, FormLabel } from '$lib/components/ui/form'
+  import { Input } from '$lib/components/ui/input'
+  import { Separator } from '$lib/components/ui/separator'
+  import { Textarea } from '$lib/components/ui/textarea'
+  import { entitySchema, type Entity } from '$lib/schemas/entity'
   import { updateEntity } from '$lib/services/data'
   import { toast } from 'svelte-sonner'
   import { defaults, superForm } from 'sveltekit-superforms'
   import { zod4, zod4Client } from 'sveltekit-superforms/adapters'
+  import EntityEditSummaryTab from './EntityEditSummaryTab.svelte'
+  import { Button } from '$lib/components/ui/button'
 
-  let { data }: { data: { entiy: Entity } } = $props()
+  let { data }: { data: { entity: Entity } } = $props()
 
-  let entity = $derived(data.entiy)
+  let { entity } = $derived(data)
 
   let open = $state(true)
 
@@ -43,7 +48,9 @@
     },
   })
 
-  const { form: formData, enhance } = updateForm
+  const { enhance } = updateForm
+
+  let player_character = $derived(entity.player_character ?? false)
 </script>
 
 <Dialog
@@ -55,20 +62,43 @@
 >
   <DialogContent>
     <form method="POST" use:enhance class="space-y-6">
+      <DialogHeader>
+        <DialogTitle>Edit {entity.name ?? 'Entity'}</DialogTitle>
+      </DialogHeader>
       <fieldset>
-        <legend>Entity Details</legend>
-        <FormField form={updateForm} name="name">
-          <FormControl>
-            <FormLabel for="name">Name</FormLabel>
-            <Input id="name" bind:value={$formData.name} />
-          </FormControl>
-        </FormField>
-        <Separator />
-        <FormField form={updateForm} name="description">
-          <FormLabel for="description">Description</FormLabel>
-          <Textarea id="description" bind:value={$formData.description} />
-        </FormField>
+        <Tabs value="summary">
+          <TabsList>
+            <TabsTrigger value="summary">Summary</TabsTrigger>
+            {#if player_character}
+              <TabsTrigger value="details">Character Details</TabsTrigger>
+            {/if}
+            <TabsTrigger value="scores">Ability Scores</TabsTrigger>
+            <TabsTrigger value="features">Features</TabsTrigger>
+            <TabsTrigger value="items">Items</TabsTrigger>
+          </TabsList>
+          <TabsContent value="summary">
+            <EntityEditSummaryTab
+              {entity}
+              form={updateForm}
+              setPlayerCharacter={(pc) => (player_character = pc)}
+            />
+          </TabsContent>
+        </Tabs>
       </fieldset>
+      <DialogFooter>
+        <Button variant="default">Next</Button>
+        <Separator class="mx-2" orientation="vertical" />
+        <Button variant="secondary" type="submit">Save</Button>
+        <Button
+          variant="outline"
+          onclick={() => {
+            open = false
+            goto(`/entities/${entity.id}`)
+          }}
+        >
+          Cancel
+        </Button>
+      </DialogFooter>
     </form>
   </DialogContent>
 </Dialog>

@@ -22,7 +22,7 @@ export function createBattle(data: Battle): Promise<Battle> {
       return data
     },
     (e) => {
-      console.log(e)
+      console.error(e)
       throw e
     },
   )
@@ -37,7 +37,7 @@ export function updateBattle(data: Battle): Promise<Battle> {
   return db.battles.update(data.id, data).then(
     (_) => data,
     (e) => {
-      console.log(e)
+      console.error(e)
       throw e
     },
   )
@@ -81,7 +81,7 @@ export function createBattleEntity(data: BattleEntity): Promise<BattleEntity> {
       return data
     },
     (e) => {
-      console.log(e)
+      console.error(e)
       throw e
     },
   )
@@ -101,6 +101,34 @@ export function updateBattleEntity(data: BattleEntity): Promise<BattleEntity> {
   )
 }
 
+interface BattleEntitiesFilterProps {
+  entity_id?: number
+}
+export async function filterBattleEntities(data: BattleEntitiesFilterProps): Promise<BattleEntityExtended[]> {
+  let battleEntities: BattleEntityExtended[] = []
+  //TODO better filtering? _feels_ like dexie should have this already
+  if (data.entity_id) {
+    battleEntities = await db['battle-entities']
+      .where('entity_id')
+      .equals(data.entity_id)
+      .toArray()
+  }
+
+  return await Promise.all(
+    battleEntities.map(async (be) => {
+      const [entity, battle] = await Promise.all([
+        db.entities.get(be.entity_id),
+        db.battles.get(be.battle_id),
+      ])
+      return {
+        entity,
+        battle,
+        ...be,
+      } satisfies BattleEntityExtended
+    }),
+  )
+}
+
 /** Entities */
 export function getEntities(): Promise<Entity[]> {
   return db.entities.toArray()
@@ -117,7 +145,7 @@ export function createEntity(data: Entity): Promise<Entity> {
       return data
     },
     (e) => {
-      console.log(e)
+      console.error(e)
       throw e
     },
   )

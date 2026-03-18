@@ -1,22 +1,15 @@
 <script lang="ts">
-  import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-  } from '$lib/components/ui/breadcrumb'
   import { Empty, EmptyHeader, EmptyTitle } from '$lib/components/ui/empty'
-  import type { Entity } from '$lib/schemas/entity'
-  import PlusIcon from '@lucide/svelte/icons/plus'
-  import type { PageProps } from './$types'
+  import { PlusIcon } from '$lib/components/Icons/lucide'
+  import ModalButton from '$lib/components/features/ModalButton.svelte'
+  import { setBreadcrumbs } from '$lib/stores/breadcrumb.svelte'
   import BattleEntityItems from './BattleEntityItems.svelte'
   import BattleEntityDetails from './BattleEntityDetails.svelte'
   import BattleInitiative from './BattleInitiative.svelte'
   import BattleEntitiesAddPage from './battle_entities/add/+page.svelte'
   import { page } from '$app/state'
-  import ModalButton from '$lib/components/features/ModalButton.svelte'
+  import type { Entity } from '$lib/schemas/entity'
+  import type { PageProps } from './$types'
 
   const { data }: PageProps = $props()
 
@@ -25,23 +18,23 @@
   let selectedEntity: Entity | undefined = $state()
   let showAdd: boolean = $state(false)
   let started: boolean = $state(false)
+
+  $effect(() => {
+    setBreadcrumbs([
+      {
+        href: '/battles',
+        label: 'Battles',
+      },
+      {
+        href: `/battles/${battle.id}`,
+        label: battle.name ?? `Battle-${battle.id}`,
+      },
+    ])
+  })
 </script>
 
 <div class="w-full min-h-full flex">
   <div class="flex flex-2 flex-col min-w-[25%]">
-    <div class="flex p-2">
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/battles">Battles</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>{battle?.name}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-    </div>
     <BattleEntityItems
       entities={entities ?? []}
       selected={(entity) => (selectedEntity = entity.entity)}
@@ -64,7 +57,7 @@
       </ModalButton>
     </div>
   </div>
-  <div class="flex-10 flex flex-col border-l p-2S">
+  <div class="flex-10 flex flex-col border-l p-2">
     <div class="grow flex flex-col overflow-y-scroll">
       {#if selectedEntity}
         <BattleEntityDetails entity={selectedEntity} />
